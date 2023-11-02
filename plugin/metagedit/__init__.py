@@ -66,7 +66,11 @@ class MetageditWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         ## OPEN AS ADMIN
         document = self.window.get_active_document()
         encoding = document.get_file().get_encoding()
-        gfile = Gio.File.new_for_uri(r'admin://' + document.get_uri_for_display())
+        # get_uri_for_display deprecated
+        # gfile = Gio.File.new_for_uri(r'admin://' + document.get_uri_for_display())
+        normal_uri = document.get_file().get_location().get_uri()
+        admin_uri = normal_uri.replace('file://', 'admin://', 1)
+        gfile = Gio.File.new_for_uri(admin_uri)
         if (not (document.can_undo() or document.can_redo())):
             self.window.close_tab(self.window.get_active_tab())
         self.window.create_tab_from_location(gfile, encoding, 0, 0, False, True)
@@ -184,7 +188,9 @@ class MetageditWindowActivatable(GObject.Object, Gedit.WindowActivatable):
                     uri = self._unsavedDocumentBackup(document)
                     if (uri): session.append(info + uri)
                 continue
-            session.append(info + re.sub(r'^/', r'file:///', document.get_uri_for_display()))
+            # get_uri_for_display deprecated    
+            #session.append(info + re.sub(r'^/', r'file:///', document.get_uri_for_display()))
+            session.append(info + re.sub(r'^/', r'file:///', document.get_file().get_location().get_uri()))
         return session
 
     def registerSession( self, sessionName ):
@@ -253,7 +259,10 @@ class MetageditWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             for tab in self.window.get_active_tab().get_parent().get_children():
                 self._closeTabIfJunk(tab)
             openTabs = self.window.get_active_tab().get_parent().get_children()
-            openTabs = [tab.get_document().get_uri_for_display() for tab in openTabs]
+            # get_uri_for_display deprecated
+            # openTabs = [tab.get_document().get_uri_for_display() for tab in openTabs]
+            openTabs = [tab.get_document().get_file().get_location().get_uri() for tab in openTabs]
+                        
             openTabs = set([re.sub(r'^/', r'file:///', tab) for tab in openTabs])
         #if (len(openTabs) == 1): self._closeTabIfJunk(self.window.get_active_tab())
         for entry in sessionEntries:
@@ -282,7 +291,10 @@ class MetageditWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         try: tabs = self.window.get_active_tab().get_parent().get_children()
         except: tabs = set()
         for tab in tabs:
-            if (tab.get_document().get_uri_for_display() == sessionPath):
+            # get_uri_for_display deprecated
+            #if (tab.get_document().get_uri_for_display() == sessionPath):
+            if (tab.get_document().get_file().get_location().get_uri()== sessionPath):
+            
                 self.window.set_active_tab(tab)
                 tab.get_document().set_language(None)
                 return

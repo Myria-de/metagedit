@@ -2,6 +2,10 @@
 
 Metagedit is a python plugin for [Gedit](https://en.wikipedia.org/wiki/Gedit) (GNOME Text Editor, usually shipped with Debian, Fedora, openSUSE and Ubuntu) which adds various improvements and functionalities to it.
 
+# Changelog
+- get_uri_for_display deprecated fixed
+
+
 ### Characteristics
 
 * Metagedit-related settings/prefs are all stored using __GSettings__, persisting through Gedit sessions and being externally modifiable via gsettings interfaces;
